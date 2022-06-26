@@ -1,20 +1,7 @@
 let board = [[2, 2, 2, 2],
              [0, 0, 0, 0],
-             [2, 0, 2, 0],
-             [0, 0, 0, 0]]
-
-function getCellInfo() {
-    let table = document.getElementById("gameBoardTable");
-    console.log(table.rows[0].cells[1].innerHTML)
-    console.log(table.rows[1].cells[2].innerHTML)
-    console.log(table.rows[2].cells[3].innerHTML)
-}
-
-function changeCellTest() {
-    let table = document.getElementById("gameBoardTable");
-    table.rows[0].cells[3].innerHTML = '<div>2</div>';
-    table.rows[0].cells[3].querySelector("div").classList.add("gameBoardCell");
-}
+             [2, 0, 0, 2],
+             [8, 4, 4, 8]]
 
 function updateGameBoardCells(gameBoardInfo) {
     let table = document.getElementById("gameBoardTable");
@@ -34,10 +21,16 @@ function updateGameBoardCells(gameBoardInfo) {
 function moveTilesRight(gameBoardInfo) {
     for (let i = 0; i < 4; i++) {
         for (let j = 3; j > 0; j--) {
-            if (gameBoardInfo[i][j] === gameBoardInfo[i][j - 1]) {
+            if (gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j - 1]) {
                 gameBoardInfo[i][j - 1] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
                 j--;
+            } else if (j - 2 >= 0 && gameBoardInfo[j - 2] !== 0 && gameBoardInfo[i][j - 1] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j - 2]) {
+                gameBoardInfo[i][j - 2] = gameBoardInfo[i][j] * 2;
+                gameBoardInfo[i][j] = 0;
+            } else if (j - 3 >= 0 && gameBoardInfo[j - 3] !== 0 && gameBoardInfo[i][j - 2] === 0 && gameBoardInfo[i][j - 1] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j - 3]) {
+                gameBoardInfo[i][j - 3] = gameBoardInfo[i][j] * 2;
+                gameBoardInfo[i][j] = 0;
             }
         }
 
@@ -51,6 +44,36 @@ function moveTilesRight(gameBoardInfo) {
         }
         gameBoardInfo[i] = newRow;
     }
+    updateGameBoardCells(gameBoardInfo);
+}
+
+function moveTilesLeft(gameBoardInfo) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 3; j++) {
+            if (gameBoardInfo[i][j] === gameBoardInfo[i][j + 1]) {
+                gameBoardInfo[i][j + 1] = gameBoardInfo[i][j] * 2;
+                gameBoardInfo[i][j] = 0;
+                j++;
+            } else if (j + 2 <= 3 && gameBoardInfo[j + 2] !== 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j + 2]) {
+                gameBoardInfo[i][j + 2] = gameBoardInfo[i][j] * 2;
+                gameBoardInfo[i][j] = 0;
+            } else if (j + 3 <= 3 && gameBoardInfo[j + 3] !== 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j + 3]) {
+                gameBoardInfo[i][j + 3] = gameBoardInfo[i][j] * 2;
+                gameBoardInfo[i][j] = 0;
+            }
+        }
+
+        let newRow = [0, 0, 0, 0];
+        let k = 0;
+        for (let j = 0; j <= 3; j++) {
+            if (gameBoardInfo[i][j] !== 0) {
+                newRow[k] = gameBoardInfo[i][j];
+                k++;
+            }
+        }
+        gameBoardInfo[i] = newRow;
+    }
+    updateGameBoardCells(gameBoardInfo);
 }
 
 function copyBoard(gameBoardInfo) {
@@ -63,13 +86,17 @@ function copyBoard(gameBoardInfo) {
     return newBoard;
 }
 
-// getCellInfo();
-
-// document.addEventListener('click', changeCellTest)
-
 updateGameBoardCells(board)
 
-moveTilesRight(board)
+// moveTilesRight(board)
 
-document.addEventListener('click', function() {updateGameBoardCells(board)})
+// document.addEventListener("click", function() {moveTilesRight(board)})
+
+document.addEventListener("keydown", (event) => {
+    if (event.code === "ArrowRight") {
+        moveTilesRight(board)
+    } else if (event.code === "ArrowLeft") {
+        moveTilesLeft(board)
+    }
+})
 
