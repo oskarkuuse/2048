@@ -1,7 +1,7 @@
 let board = [[0, 0, 0, 0],
-             [2, 0, 0, 0],
              [0, 0, 0, 0],
-             [0, 2, 0, 0]]
+             [0, 0, 0, 0],
+             [0, 0, 0, 0]]
 
 function updateGameBoardCells(gameBoardInfo) {
     let table = document.getElementById("gameBoardTable");
@@ -16,6 +16,51 @@ function updateGameBoardCells(gameBoardInfo) {
             }
         }
     }
+}
+
+function boardHasFreeCells(board) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (board[i][j] === 0)
+                return true;
+        }
+    }
+    return false;
+}
+
+function generateRandomInt(maxValue) {
+    return Math.floor(Math.random() * maxValue);
+}
+
+function insertRandomTile(board, value) {
+    let freeCells = [];
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (board[i][j] === 0) {
+                freeCells.push(i * 4 + j);
+            }
+        }
+    }
+    let randomTile = freeCells[generateRandomInt(freeCells.length)];
+    board[(randomTile - (randomTile % 4)) / 4][randomTile % 4] = value;
+}
+
+function addRandomTile(board) {
+    if (boardHasFreeCells(board)) {
+        let value = Math.random() < 0.9 ? 2 : 4;
+        insertRandomTile(board, value);
+    }
+    updateGameBoardCells(board);
+}
+
+function initializeGame(board) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            board[i][j] = 0;
+        }
+    }
+    addRandomTile(board);
+    addRandomTile(board);
 }
 
 function moveTilesRight(gameBoardInfo) {
@@ -166,21 +211,27 @@ function copyBoard(gameBoardInfo) {
 //     $(".gameBoardCell").css({position: "relative"}).animate({position: "relative", opacity: 0.25, left: "124px"});
 // });
 
-updateGameBoardCells(board)
+initializeGame(board);
 
 document.addEventListener("keydown", (event) => {
     if (event.code === "ArrowRight") {
         moveTilesRight(board)
+        addRandomTile(board)
     } else if (event.code === "ArrowLeft") {
         moveTilesLeft(board)
+        addRandomTile(board)
     } else if (event.code === "ArrowUp") {
         moveTilesUp(board)
+        addRandomTile(board)
     } else if (event.code === "ArrowDown") {
         moveTilesDown(board)
-    } else if (event.code === "KeyR") {
+        addRandomTile(board)
+    } else if (event.code === "KeyI") { // temp. help feature
         let info = prompt("rida veerg")
         let numbers = info.split(" ")
         board[parseInt(numbers[0]) - 1][parseInt(numbers[1]) - 1] = 2
         updateGameBoardCells(board)
+    } else if (event.code === "KeyR") {
+        initializeGame(board)
     }
 })
