@@ -11,11 +11,38 @@ function updateGameBoardCells(gameBoardInfo) {
                 table.rows[i].cells[j].innerHTML = "<div></div>";
                 table.rows[i].cells[j].querySelector("div").innerText = gameBoardInfo[i][j];
                 table.rows[i].cells[j].querySelector("div").classList.add("gameBoardCell");
+                table.rows[i].cells[j].querySelector("div").style.background = pickCellColor(gameBoardInfo[i][j]);
             } else {
                 table.rows[i].cells[j].innerHTML = "";
             }
         }
     }
+}
+
+function pickCellColor(cellValue) {
+    if (cellValue === 2)
+        return "#eee4da";
+    else if (cellValue === 4)
+        return "#eee1c9";
+    else if (cellValue === 8)
+        return "#f3b27a";
+    else if (cellValue === 16)
+        return "#f69664";
+    else if (cellValue === 32)
+        return "#f77c5f";
+    else if (cellValue === 64)
+        return "#f75f3b";
+    else if (cellValue === 128)
+        return "#edd073";
+    else if (cellValue === 256)
+        return "#edcc61";
+    else if (cellValue === 512)
+        return "#edc354";
+    else if (cellValue === 1024)
+        return "#edc33e";
+    else if (cellValue === 2048)
+        return "#edc32e";
+
 }
 
 function boardHasFreeCells(board) {
@@ -206,14 +233,19 @@ function copyBoard(gameBoardInfo) {
 }
 
 // Jquery demo
-// $(".gameBoard").click(function(){
-//     // $("td").css({position: "relative"})
-//     $(".gameBoardCell").css({position: "relative"}).animate({position: "relative", opacity: 0.25, left: "124px"});
-// });
+$(".gameBoard").click(function(){
+    // $("td").css({position: "relative"})
+    $(".gameBoardCell").css({position: "relative"}).animate({position: "relative", opacity: 1, left: "248px"});
+
+
+    // modify children of certain class demo
+    // name = ".cell"
+    // $(name).children().css({position: "relative"}).animate({position: "relative", opacity: 0.25, left: "124px"});
+});
 
 initializeGame(board);
 
-document.addEventListener("keydown", (event) => {
+document.addEventListener("keydown", (event) => { // Note: when no tiles move no new cells are added!
     if (event.code === "ArrowRight") {
         moveTilesRight(board)
         addRandomTile(board)
