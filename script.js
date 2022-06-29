@@ -158,7 +158,7 @@ function moveTilesLeft(gameBoardInfo) {
         }
         gameBoardInfo[i] = newRow;
     }
-    updateGameBoardCells(gameBoardInfo);
+
 }
 
 function moveTilesUp(gameBoardInfo) {
@@ -193,7 +193,6 @@ function moveTilesUp(gameBoardInfo) {
         }
 
     }
-    updateGameBoardCells(gameBoardInfo);
 }
 
 function moveTilesDown(gameBoardInfo) {
@@ -228,7 +227,6 @@ function moveTilesDown(gameBoardInfo) {
         }
 
     }
-    updateGameBoardCells(gameBoardInfo);
 }
 
 function copyBoard(gameBoardInfo) {
@@ -252,26 +250,117 @@ $(".gameBoard").click(function(){
     // name = ".cell"
     // $(name).children().css({position: "relative"}).animate({position: "relative", opacity: 0.25, left: "124px"});
 
-    let leftPos = ($(".cell3").offset().left - $(".cell0").offset().left) + "px";
-    $(".cell0").children().css({position: "relative"}).animate({left: leftPos});
+    // let leftPos = ($(".cell3").offset().left - $(".cell2").offset().left) + "px";
+    // let leftPos2 = ($(".cell2").offset().left - $(".cell0").offset().left) + "px";
+    // $(".cell0").children().css({position: "relative"}).animate({left: leftPos2}, 100);
+    // $(".cell2").children().css({position: "relative"}).animate({left: leftPos}, 100);
 });
+
+function moveTilesRightAnimation(board, previousBoard) {
+    for (let i = 0; i < 4; i++) {
+        let target = 3;
+        let targetValue = board[i][target];
+        for (let j = 3; j >= 0; j--) {
+            if (previousBoard[i][j] === 0)
+                continue;
+            let startCell = ".cell" + (i * 4 + j);
+            let endCell = ".cell" + (i * 4 + target);
+            let startEndOffset = ($(endCell).offset().left -  $(startCell).offset().left) + "px";
+            $(startCell).children().css({position: "relative"}).animate({left: startEndOffset}, 100);
+            if (targetValue - previousBoard[i][j] === 0) {
+                target--;
+                targetValue = board[i][target];
+            } else {
+                targetValue -= previousBoard[i][j];
+            }
+        }
+    }
+}
+
+function moveTilesLeftAnimation(board, previousBoard) {
+    for (let i = 0; i < 4; i++) {
+        let target = 0;
+        let targetValue = board[i][target];
+        for (let j = 0; j < 4; j++) {
+            if (previousBoard[i][j] === 0)
+                continue;
+            let startCell = ".cell" + (i * 4 + j);
+            let endCell = ".cell" + (i * 4 + target);
+            let startEndOffset = ($(endCell).offset().left -  $(startCell).offset().left) + "px";
+            $(startCell).children().css({position: "relative"}).animate({left: startEndOffset}, 100);
+            if (targetValue - previousBoard[i][j] === 0) {
+                target++;
+                targetValue = board[i][target];
+            } else {
+                targetValue -= previousBoard[i][j];
+            }
+        }
+    }
+}
+
+function moveTilesDownAnimation(board, previousBoard) {
+    for (let j = 0; j < 4; j++) {
+        let target = 3;
+        let targetValue = board[target][j];
+        for (let i = 3; i >= 0; i--) {
+            if (previousBoard[i][j] === 0)
+                continue;
+            let startCell = ".cell" + (i * 4 + j);
+            let endCell = ".cell" + (target * 4 + j);
+            let startEndOffset = ($(endCell).offset().top -  $(startCell).offset().top) + "px";
+            $(startCell).children().css({position: "relative"}).animate({top: startEndOffset}, 100);
+            if (targetValue - previousBoard[i][j] === 0) {
+                target--;
+                if (target >= 0)
+                    targetValue = board[target][j];
+            } else {
+                targetValue -= previousBoard[i][j];
+            }
+        }
+    }
+}
+
+function moveTilesUpAnimation(board, previousBoard) {
+    for (let j = 0; j < 4; j++) {
+        let target = 0;
+        let targetValue = board[target][j];
+        for (let i = 0; i < 4; i++) {
+            if (previousBoard[i][j] === 0)
+                continue;
+            let startCell = ".cell" + (i * 4 + j);
+            let endCell = ".cell" + (target * 4 + j);
+            let startEndOffset = ($(endCell).offset().top -  $(startCell).offset().top) + "px";
+            $(startCell).children().css({position: "relative"}).animate({top: startEndOffset}, 100);
+            if (targetValue - previousBoard[i][j] === 0) {
+                target++;
+                if (target <= 3)
+                    targetValue = board[target][j];
+            } else {
+                targetValue -= previousBoard[i][j];
+            }
+        }
+    }
+}
 
 initializeGame(board);
 
 document.addEventListener("keydown", (event) => { // Note: when no tiles move no new cells are added!
+    // updateGameBoardCells(board)
+    console.log(board)
+    let previousBoard = copyBoard(board);
     if (event.code === "ArrowRight") {
         moveTilesRight(board)
-        // let randomTileClass = addRandomTile(board);
-        // window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100)
+        moveTilesRightAnimation(board, previousBoard)
+
     } else if (event.code === "ArrowLeft") {
         moveTilesLeft(board)
-        // addRandomTile(board)
+        moveTilesLeftAnimation(board, previousBoard)
     } else if (event.code === "ArrowUp") {
         moveTilesUp(board)
-        // addRandomTile(board)
+        moveTilesUpAnimation(board, previousBoard)
     } else if (event.code === "ArrowDown") {
         moveTilesDown(board)
-        // addRandomTile(board)
+        moveTilesDownAnimation(board, previousBoard)
     } else if (event.code === "KeyI") { // temp. help feature
         let info = prompt("rida veerg")
         let numbers = info.split(" ")
