@@ -2,7 +2,6 @@
     background: #faf8ef;
 }
 
-
 .gameBoardParent {
     height: 96vh;
     display: flex;
@@ -38,3 +37,18 @@ td {
     font-size: 50px;
     color: #776e65;
 }
+
+@keyframes scaleElement {
+    0% {transform: scale(0,0)}
+    100% {transform: scale(1, 1)}
+}
+
+.newTileAnimation {
+    animation-name: scaleElement;
+    animation-duration: 100ms;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+    animation-timing-function: linear;
+}
+
+

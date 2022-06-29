@@ -70,14 +70,18 @@ function insertRandomTile(board, value) {
     }
     let randomTile = freeCells[generateRandomInt(freeCells.length)];
     board[(randomTile - (randomTile % 4)) / 4][randomTile % 4] = value;
+    return randomTile;
 }
 
 function addRandomTile(board) {
     if (boardHasFreeCells(board)) {
         let value = Math.random() < 0.9 ? 2 : 4;
-        insertRandomTile(board, value);
+        let randomTile = insertRandomTile(board, value);
+        let randomTileClass = ".cell" + randomTile;
+        updateGameBoardCells(board);
+        $(randomTileClass).children().addClass("newTileAnimation");
     }
-    updateGameBoardCells(board);
+
 }
 
 function initializeGame(board) {
@@ -88,6 +92,7 @@ function initializeGame(board) {
     }
     addRandomTile(board);
     addRandomTile(board);
+    $(".gameBoardCell").addClass("newTileAnimation");
 }
 
 function moveTilesRight(gameBoardInfo) {
@@ -235,8 +240,9 @@ function copyBoard(gameBoardInfo) {
 // Jquery demo
 $(".gameBoard").click(function(){
     // $("td").css({position: "relative"})
-    $(".gameBoardCell").css({position: "relative"}).animate({position: "relative", opacity: 1, left: "248px"});
+    // $(".gameBoardCell").css({position: "relative"}).animate({position: "relative", left: "248px"});
 
+    // $(".gameBoardCell").addClass("fadeInAnimation")
 
     // modify children of certain class demo
     // name = ".cell"
