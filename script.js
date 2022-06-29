@@ -77,10 +77,11 @@ function addRandomTile(board) {
     if (boardHasFreeCells(board)) {
         let value = Math.random() < 0.9 ? 2 : 4;
         let randomTile = insertRandomTile(board, value);
-        let randomTileClass = ".cell" + randomTile;
-        updateGameBoardCells(board);
-        $(randomTileClass).children().addClass("newTileAnimation");
+        return ".cell" + randomTile;
+        // updateGameBoardCells(board);
+        // $(randomTileClass).children().addClass("newTileAnimation");
     }
+    return "none";
 
 }
 
@@ -92,6 +93,7 @@ function initializeGame(board) {
     }
     addRandomTile(board);
     addRandomTile(board);
+    updateGameBoardCells(board);
     $(".gameBoardCell").addClass("newTileAnimation");
 }
 
@@ -123,7 +125,9 @@ function moveTilesRight(gameBoardInfo) {
         }
         gameBoardInfo[i] = newRow;
     }
-    updateGameBoardCells(gameBoardInfo);
+    // let leftPos = ($(".cell3").offset().left - $(".cell0").offset().left) + "px";
+    // $(".cell0").children().css({position: "relative"}).animate({left: leftPos}, 100);
+    // updateGameBoardCells(gameBoardInfo);
 }
 
 function moveTilesLeft(gameBoardInfo) {
@@ -247,6 +251,9 @@ $(".gameBoard").click(function(){
     // modify children of certain class demo
     // name = ".cell"
     // $(name).children().css({position: "relative"}).animate({position: "relative", opacity: 0.25, left: "124px"});
+
+    let leftPos = ($(".cell3").offset().left - $(".cell0").offset().left) + "px";
+    $(".cell0").children().css({position: "relative"}).animate({left: leftPos});
 });
 
 initializeGame(board);
@@ -254,16 +261,17 @@ initializeGame(board);
 document.addEventListener("keydown", (event) => { // Note: when no tiles move no new cells are added!
     if (event.code === "ArrowRight") {
         moveTilesRight(board)
-        addRandomTile(board)
+        // let randomTileClass = addRandomTile(board);
+        // window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100)
     } else if (event.code === "ArrowLeft") {
         moveTilesLeft(board)
-        addRandomTile(board)
+        // addRandomTile(board)
     } else if (event.code === "ArrowUp") {
         moveTilesUp(board)
-        addRandomTile(board)
+        // addRandomTile(board)
     } else if (event.code === "ArrowDown") {
         moveTilesDown(board)
-        addRandomTile(board)
+        // addRandomTile(board)
     } else if (event.code === "KeyI") { // temp. help feature
         let info = prompt("rida veerg")
         let numbers = info.split(" ")
@@ -271,5 +279,9 @@ document.addEventListener("keydown", (event) => { // Note: when no tiles move no
         updateGameBoardCells(board)
     } else if (event.code === "KeyR") {
         initializeGame(board)
+    }
+    if (event.code === "ArrowRight" || event.code === "ArrowUp" || event.code === "ArrowDown" || event.code === "ArrowLeft") {
+        let randomTileClass = addRandomTile(board);
+        window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100)
     }
 })
