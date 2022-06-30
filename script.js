@@ -35,13 +35,13 @@ function pickCellColor(cellValue) {
     else if (cellValue === 128)
         return "#edd073";
     else if (cellValue === 256)
-        return "#edcc61";
+        return "#edcc62";
     else if (cellValue === 512)
-        return "#edc354";
+        return "#edc950";
     else if (cellValue === 1024)
-        return "#edc33e";
+        return "#edc53f";
     else if (cellValue === 2048)
-        return "#edc32e";
+        return "#edc22e";
 
 }
 
@@ -239,6 +239,16 @@ function copyBoard(gameBoardInfo) {
     return newBoard;
 }
 
+function compareBoards(board1, board2) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (board1[i][j] !== board2[i][j])
+                return false;
+        }
+    }
+    return true;
+}
+
 // Jquery demo
 $(".gameBoard").click(function(){
     // $("td").css({position: "relative"})
@@ -370,7 +380,11 @@ document.addEventListener("keydown", (event) => { // Note: when no tiles move no
         initializeGame(board)
     }
     if (event.code === "ArrowRight" || event.code === "ArrowUp" || event.code === "ArrowDown" || event.code === "ArrowLeft") {
-        let randomTileClass = addRandomTile(board);
-        window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100)
+        if (compareBoards(board, previousBoard)) {
+            window.setTimeout(function () {updateGameBoardCells(board)}, 100);
+        } else {
+            let randomTileClass = addRandomTile(board);
+            window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100);
+        }
     }
 })
