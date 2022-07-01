@@ -7,6 +7,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+
+    user-select: none;
 }
 .gameBoard {
     background: #bbada0;
@@ -54,6 +56,35 @@ table {
     animation-timing-function: linear;
 }
 
+.gameOverParent {
+    position: absolute;
+    background: rgba(238, 228, 218, 0.73);
+    height: 530px;
+    width: 530px;
+    border-radius: 4px;
+    opacity: 0;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
 
+    font-family: sans-serif;
+    font-size: 60px;
+    color: #776e65;
+}
 
+.restartButton {
+    height: 50px;
+    width: 120px;
+
+    border: 0;
+    border-radius: 4px;
+    background: #8f7a66;
+    outline: 0;
+
+    color: white;
+    font-family: sans-serif;
+    font-size: 18px;
+    user-select: none;
+}

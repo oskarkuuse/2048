@@ -12,6 +12,9 @@ function updateGameBoardCells(gameBoardInfo) {
                 table.rows[i].cells[j].querySelector("div").innerText = gameBoardInfo[i][j];
                 table.rows[i].cells[j].querySelector("div").classList.add("gameBoardCell");
                 table.rows[i].cells[j].querySelector("div").style.background = pickCellColor(gameBoardInfo[i][j]);
+                if (gameBoardInfo[i][j] >= 8) {
+                    table.rows[i].cells[j].querySelector("div").style.color = "white";
+                }
             } else {
                 table.rows[i].cells[j].innerHTML = "";
             }
@@ -249,23 +252,6 @@ function compareBoards(board1, board2) {
     return true;
 }
 
-// Jquery demo
-$(".gameBoard").click(function(){
-    // $("td").css({position: "relative"})
-    // $(".gameBoardCell").css({position: "relative"}).animate({position: "relative", left: "248px"});
-
-    // $(".gameBoardCell").addClass("fadeInAnimation")
-
-    // modify children of certain class demo
-    // name = ".cell"
-    // $(name).children().css({position: "relative"}).animate({position: "relative", opacity: 0.25, left: "124px"});
-
-    // let leftPos = ($(".cell3").offset().left - $(".cell2").offset().left) + "px";
-    // let leftPos2 = ($(".cell2").offset().left - $(".cell0").offset().left) + "px";
-    // $(".cell0").children().css({position: "relative"}).animate({left: leftPos2}, 100);
-    // $(".cell2").children().css({position: "relative"}).animate({left: leftPos}, 100);
-});
-
 function moveTilesRightAnimation(board, previousBoard) {
     for (let i = 0; i < 4; i++) {
         let target = 3;
@@ -352,16 +338,21 @@ function moveTilesUpAnimation(board, previousBoard) {
     }
 }
 
+// function isGameOver(board) {
+//     if (!boardHasFreeCells(board))
+//         return false;
+//
+// }
+
 initializeGame(board);
 
-document.addEventListener("keydown", (event) => { // Note: when no tiles move no new cells are added!
+document.addEventListener("keydown", (event) => {
     // updateGameBoardCells(board)
-    console.log(board)
+    // console.log(board)
     let previousBoard = copyBoard(board);
     if (event.code === "ArrowRight") {
         moveTilesRight(board)
         moveTilesRightAnimation(board, previousBoard)
-
     } else if (event.code === "ArrowLeft") {
         moveTilesLeft(board)
         moveTilesLeftAnimation(board, previousBoard)
@@ -378,6 +369,9 @@ document.addEventListener("keydown", (event) => { // Note: when no tiles move no
         updateGameBoardCells(board)
     } else if (event.code === "KeyR") {
         initializeGame(board)
+        $(".gameOverParent").animate({opacity: 0}, 0)
+    } else if (event.code === "KeyE") {
+        $(".gameOverParent").animate({opacity: 1}, 200)
     }
     if (event.code === "ArrowRight" || event.code === "ArrowUp" || event.code === "ArrowDown" || event.code === "ArrowLeft") {
         if (compareBoards(board, previousBoard)) {
@@ -388,3 +382,11 @@ document.addEventListener("keydown", (event) => { // Note: when no tiles move no
         }
     }
 })
+
+$(".restartButton").click(function () {
+    let gameOverParent = $(".gameOverParent");
+    if (gameOverParent.css("opacity") !== "0") {
+        initializeGame(board);
+        gameOverParent.animate({opacity: 0}, 0)
+    }
+});
