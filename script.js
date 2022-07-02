@@ -1,8 +1,3 @@
-let board = [[0, 0, 0, 0],
-             [0, 0, 0, 0],
-             [0, 0, 0, 0],
-             [0, 0, 0, 0]]
-
 function updateGameBoardCells(gameBoardInfo) {
     let table = document.getElementById("gameBoardTable");
     for (let i = 0; i < 4; i++) {
@@ -338,18 +333,41 @@ function moveTilesUpAnimation(board, previousBoard) {
     }
 }
 
-// function isGameOver(board) {
-//     if (!boardHasFreeCells(board))
-//         return false;
-//
-// }
+function isGameOver(board) {
+    if (boardHasFreeCells(board))
+        return false;
+
+    let movedBoard = copyBoard(board);
+    moveTilesRight(movedBoard);
+    if (!compareBoards(board, movedBoard))
+        return false;
+
+    movedBoard = copyBoard(board);
+    moveTilesLeft(movedBoard);
+    if (!compareBoards(board, movedBoard))
+        return false;
+
+    movedBoard = copyBoard(board);
+    moveTilesUp(movedBoard);
+    if (!compareBoards(board, movedBoard))
+        return false;
+
+    movedBoard = copyBoard(board);
+    moveTilesDown(movedBoard);
+    return compareBoards(board, movedBoard);
+
+}
+
+let board = [[0, 0, 0, 0],
+             [0, 0, 0, 0],
+             [0, 0, 0, 0],
+             [0, 0, 0, 0]]
 
 initializeGame(board);
 
 document.addEventListener("keydown", (event) => {
-    // updateGameBoardCells(board)
-    // console.log(board)
     let previousBoard = copyBoard(board);
+
     if (event.code === "ArrowRight") {
         moveTilesRight(board)
         moveTilesRightAnimation(board, previousBoard)
@@ -373,6 +391,7 @@ document.addEventListener("keydown", (event) => {
     } else if (event.code === "KeyE") {
         $(".gameOverParent").animate({opacity: 1}, 200)
     }
+
     if (event.code === "ArrowRight" || event.code === "ArrowUp" || event.code === "ArrowDown" || event.code === "ArrowLeft") {
         if (compareBoards(board, previousBoard)) {
             window.setTimeout(function () {updateGameBoardCells(board)}, 100);
@@ -381,7 +400,12 @@ document.addEventListener("keydown", (event) => {
             window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100);
         }
     }
+
+    if (isGameOver(board)) {
+        $(".gameOverParent").animate({opacity: 1}, 500)
+    }
 })
+
 
 $(".restartButton").click(function () {
     let gameOverParent = $(".gameOverParent");

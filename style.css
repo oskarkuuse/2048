@@ -61,7 +61,7 @@ table {
     background: rgba(238, 228, 218, 0.73);
     height: 530px;
     width: 530px;
-    border-radius: 4px;
+    border-radius: 8px;
     opacity: 0;
 
     display: flex;
