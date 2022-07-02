@@ -1,3 +1,5 @@
+const shadowOpacity = {128: 0.24, 256: 0.32, 512: 0.4, 1024: 0.48, 2048: 0.55};
+
 function updateGameBoardCells(gameBoardInfo) {
     let table = document.getElementById("gameBoardTable");
     for (let i = 0; i < 4; i++) {
@@ -9,6 +11,9 @@ function updateGameBoardCells(gameBoardInfo) {
                 table.rows[i].cells[j].querySelector("div").style.background = pickCellColor(gameBoardInfo[i][j]);
                 if (gameBoardInfo[i][j] >= 8) {
                     table.rows[i].cells[j].querySelector("div").style.color = "white";
+                }
+                if (gameBoardInfo[i][j] >= 128) {
+                    table.rows[i].cells[j].querySelector("div").style.boxShadow = "0 0 30px 10px rgba(243, 215, 116, " + shadowOpacity[gameBoardInfo[i][j]] + ")";
                 }
             } else {
                 table.rows[i].cells[j].innerHTML = "";
@@ -247,6 +252,20 @@ function compareBoards(board1, board2) {
     return true;
 }
 
+function rightLeftAnimationTilePosition(i, j, target) {
+    let startCell = ".cell" + (i * 4 + j);
+    let endCell = ".cell" + (i * 4 + target);
+    let startEndOffset = ($(endCell).offset().left -  $(startCell).offset().left) + "px";
+    $(startCell).children().css({position: "relative"}).animate({left: startEndOffset}, 100);
+}
+
+function upDownAnimationTilePosition(i, j, target) {
+    let startCell = ".cell" + (i * 4 + j);
+    let endCell = ".cell" + (target * 4 + j);
+    let startEndOffset = ($(endCell).offset().top -  $(startCell).offset().top) + "px";
+    $(startCell).children().css({position: "relative"}).animate({top: startEndOffset}, 100);
+}
+
 function moveTilesRightAnimation(board, previousBoard) {
     for (let i = 0; i < 4; i++) {
         let target = 3;
@@ -254,10 +273,7 @@ function moveTilesRightAnimation(board, previousBoard) {
         for (let j = 3; j >= 0; j--) {
             if (previousBoard[i][j] === 0)
                 continue;
-            let startCell = ".cell" + (i * 4 + j);
-            let endCell = ".cell" + (i * 4 + target);
-            let startEndOffset = ($(endCell).offset().left -  $(startCell).offset().left) + "px";
-            $(startCell).children().css({position: "relative"}).animate({left: startEndOffset}, 100);
+            rightLeftAnimationTilePosition(i, j, target)
             if (targetValue - previousBoard[i][j] === 0) {
                 target--;
                 targetValue = board[i][target];
@@ -275,10 +291,7 @@ function moveTilesLeftAnimation(board, previousBoard) {
         for (let j = 0; j < 4; j++) {
             if (previousBoard[i][j] === 0)
                 continue;
-            let startCell = ".cell" + (i * 4 + j);
-            let endCell = ".cell" + (i * 4 + target);
-            let startEndOffset = ($(endCell).offset().left -  $(startCell).offset().left) + "px";
-            $(startCell).children().css({position: "relative"}).animate({left: startEndOffset}, 100);
+            rightLeftAnimationTilePosition(i, j, target);
             if (targetValue - previousBoard[i][j] === 0) {
                 target++;
                 targetValue = board[i][target];
@@ -296,10 +309,7 @@ function moveTilesDownAnimation(board, previousBoard) {
         for (let i = 3; i >= 0; i--) {
             if (previousBoard[i][j] === 0)
                 continue;
-            let startCell = ".cell" + (i * 4 + j);
-            let endCell = ".cell" + (target * 4 + j);
-            let startEndOffset = ($(endCell).offset().top -  $(startCell).offset().top) + "px";
-            $(startCell).children().css({position: "relative"}).animate({top: startEndOffset}, 100);
+            upDownAnimationTilePosition(i, j, target);
             if (targetValue - previousBoard[i][j] === 0) {
                 target--;
                 if (target >= 0)
@@ -318,10 +328,7 @@ function moveTilesUpAnimation(board, previousBoard) {
         for (let i = 0; i < 4; i++) {
             if (previousBoard[i][j] === 0)
                 continue;
-            let startCell = ".cell" + (i * 4 + j);
-            let endCell = ".cell" + (target * 4 + j);
-            let startEndOffset = ($(endCell).offset().top -  $(startCell).offset().top) + "px";
-            $(startCell).children().css({position: "relative"}).animate({top: startEndOffset}, 100);
+            upDownAnimationTilePosition(i, j, target);
             if (targetValue - previousBoard[i][j] === 0) {
                 target++;
                 if (target <= 3)
@@ -358,6 +365,16 @@ function isGameOver(board) {
 
 }
 
+function winningBoard(board) {
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            if (board[i][j] === 2048)
+                return true;
+        }
+    }
+    return false;
+}
+
 let board = [[0, 0, 0, 0],
              [0, 0, 0, 0],
              [0, 0, 0, 0],
@@ -366,46 +383,46 @@ let board = [[0, 0, 0, 0],
 initializeGame(board);
 
 document.addEventListener("keydown", (event) => {
-    let previousBoard = copyBoard(board);
 
-    if (event.code === "ArrowRight") {
+    let previousBoard = copyBoard(board);
+    let gameOverParent = $(".gameOverParent");
+
+    if (event.code === "ArrowRight" && !winningBoard(board)) {
         moveTilesRight(board)
         moveTilesRightAnimation(board, previousBoard)
-    } else if (event.code === "ArrowLeft") {
+    } else if (event.code === "ArrowLeft" && !winningBoard(board)) {
         moveTilesLeft(board)
         moveTilesLeftAnimation(board, previousBoard)
-    } else if (event.code === "ArrowUp") {
+    } else if (event.code === "ArrowUp" && !winningBoard(board)) {
         moveTilesUp(board)
         moveTilesUpAnimation(board, previousBoard)
-    } else if (event.code === "ArrowDown") {
+    } else if (event.code === "ArrowDown" && !winningBoard(board)) {
         moveTilesDown(board)
         moveTilesDownAnimation(board, previousBoard)
-    } else if (event.code === "KeyI") { // temp. help feature
-        let info = prompt("rida veerg")
-        let numbers = info.split(" ")
-        board[parseInt(numbers[0]) - 1][parseInt(numbers[1]) - 1] = 2
-        updateGameBoardCells(board)
     } else if (event.code === "KeyR") {
         initializeGame(board)
-        $(".gameOverParent").animate({opacity: 0}, 0)
-    } else if (event.code === "KeyE") {
-        $(".gameOverParent").animate({opacity: 1}, 200)
+        gameOverParent.animate({opacity: 0}, 0)
     }
 
     if (event.code === "ArrowRight" || event.code === "ArrowUp" || event.code === "ArrowDown" || event.code === "ArrowLeft") {
         if (compareBoards(board, previousBoard)) {
-            window.setTimeout(function () {updateGameBoardCells(board)}, 100);
+            window.setTimeout(function() {updateGameBoardCells(board)}, 100);
         } else {
             let randomTileClass = addRandomTile(board);
             window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100);
         }
     }
 
-    if (isGameOver(board)) {
-        $(".gameOverParent").animate({opacity: 1}, 500)
+    if (winningBoard(board) && gameOverParent.css("opacity") === "0") {
+        gameOverParent.children("b").text("Well done!")
+        $("button").children().text("Play again")
+        gameOverParent.animate({opacity: 1}, 2000);
+    } else if (isGameOver(board) && gameOverParent.css("opacity") === "0") {
+        gameOverParent.children("b").text("Game over!")
+        $("button").children().text("Try again")
+        gameOverParent.animate({opacity: 1}, 2000);
     }
 })
-
 
 $(".restartButton").click(function () {
     let gameOverParent = $(".gameOverParent");

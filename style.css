@@ -7,9 +7,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-
     user-select: none;
 }
+
 .gameBoard {
     background: #bbada0;
     padding: 5px;
