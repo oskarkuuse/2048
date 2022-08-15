@@ -425,9 +425,33 @@ document.addEventListener("keydown", (event) => {
 })
 
 document.addEventListener('touchmove', (e) => {
+
+    let previousBoard = copyBoard(board);
+    let gameOverParent = $(".gameOverParent");
+
     e.preventDefault();
-    var touch = e.touches[0];
-    alert(touch.pageX + " - " + touch.pageY);
+    let firstTouch = e.changedTouches[0];
+    let lastTouch = e.changedTouches[e.changedTouches.length - 1];
+    // var touch = e.touches[0];
+    // alert(touch.pageX + " - " + touch.pageY);
+
+    let changeX = lastTouch.pageX - firstTouch.pageX;
+    let changeY = lastTouch.pageY - firstTouch.pageY;
+    let horizontalMovement = Math.abs(changeX) > Math.abs(changeY);
+
+    if (changeX > 0 && horizontalMovement) {
+        moveTilesRight(board)
+        moveTilesRightAnimation(board, previousBoard)
+    } else if (changeX < 0 && horizontalMovement) {
+        moveTilesLeft(board)
+        moveTilesLeftAnimation(board, previousBoard)
+    } else if (changeY > 0 && !horizontalMovement) {
+        moveTilesUp(board)
+        moveTilesUpAnimation(board, previousBoard)
+    } else if (changeY < 0 && !horizontalMovement) {
+        moveTilesDown(board)
+        moveTilesDownAnimation(board, previousBoard)
+    }
 });
 
 
