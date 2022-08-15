@@ -424,6 +424,13 @@ document.addEventListener("keydown", (event) => {
     }
 })
 
+document.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    var touch = e.touches[0];
+    alert(touch.pageX + " - " + touch.pageY);
+});
+
+
 $(".restartButton").click(function () {
     let gameOverParent = $(".gameOverParent");
     if (gameOverParent.css("opacity") !== "0") {
