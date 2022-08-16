@@ -426,10 +426,15 @@ document.addEventListener("keydown", (event) => {
 
 let startX = null;
 let startY = null;
+let allowMovement = true;
 
 document.addEventListener('touchmove', (e) => {
 
     e.preventDefault()
+
+    if (!allowMovement) {
+        return;
+    }
 
     let previousBoard = copyBoard(board);
     // let gameOverParent = $(".gameOverParent");
@@ -439,6 +444,8 @@ document.addEventListener('touchmove', (e) => {
     if (startX == null || startY == null) {
         startX = touch.pageX;
         startY = touch.pageY;
+        allowMovement = false;
+        setTimeout(function () {allowMovement = true}, 100);
         return;
     }
 
@@ -447,6 +454,8 @@ document.addEventListener('touchmove', (e) => {
     let horizontalMovement = Math.abs(changeX) > Math.abs(changeY);
     startX = null;
     startY = null;
+    allowMovement = false;
+    setTimeout(function () {allowMovement = true}, 200);
 
     if (changeX > 0 && horizontalMovement) {
         moveTilesRight(board)
