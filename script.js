@@ -424,20 +424,32 @@ document.addEventListener("keydown", (event) => {
     }
 })
 
-document.addEventListener('touchmove', (e) => {
+let startX = null;
+let startY = null;
+
+
+document.addEventListener('touchstart', (e) => {
+    e.preventDefault()
+    startX = e.touches[0].pageX
+    startY = e.touches[0].pageY
+});
+
+document.addEventListener('touchend', (e) => {
 
     let previousBoard = copyBoard(board);
     let gameOverParent = $(".gameOverParent");
 
-    e.preventDefault();
-    let firstTouch = e.changedTouches[0];
-    let lastTouch = e.changedTouches[e.changedTouches.length - 1];
-    // var touch = e.touches[0];
-    // alert(touch.pageX + " - " + touch.pageY);
+    if (startX == null || startY == null) {
+        return;
+    }
+    let endX = e.touches[0].pageX;
+    let endY = e.touches[0].pageY;
 
-    let changeX = lastTouch.pageX - firstTouch.pageX;
-    let changeY = lastTouch.pageY - firstTouch.pageY;
+    let changeX = endX - startX;
+    let changeY = endY - startY;
     let horizontalMovement = Math.abs(changeX) > Math.abs(changeY);
+    startX = null;
+    startY = null;
 
     if (changeX > 0 && horizontalMovement) {
         moveTilesRight(board)
@@ -445,14 +457,69 @@ document.addEventListener('touchmove', (e) => {
     } else if (changeX < 0 && horizontalMovement) {
         moveTilesLeft(board)
         moveTilesLeftAnimation(board, previousBoard)
-    } else if (changeY > 0 && !horizontalMovement) {
+    } else if (changeY < 0 && !horizontalMovement) {
         moveTilesUp(board)
         moveTilesUpAnimation(board, previousBoard)
-    } else if (changeY < 0 && !horizontalMovement) {
+    } else if (changeY > 0 && !horizontalMovement) {
         moveTilesDown(board)
         moveTilesDownAnimation(board, previousBoard)
     }
+
+    if (compareBoards(board, previousBoard)) {
+        window.setTimeout(function() {updateGameBoardCells(board)}, 100);
+    } else {
+        let randomTileClass = addRandomTile(board);
+        window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100);
+    }
+
 });
+
+
+// document.addEventListener('mousedown', (e) => {
+//     startX = e.pageX
+//     startY = e.pageY
+// });
+
+
+// document.addEventListener('mouseup', (e) => {
+//
+//     let previousBoard = copyBoard(board);
+//     let gameOverParent = $(".gameOverParent");
+//
+//     if (startX == null || startY == null) {
+//         return;
+//     }
+//     let endX = e.pageX;
+//     let endY = e.pageY;
+//
+//     let changeX = endX - startX;
+//     let changeY = endY - startY;
+//     let horizontalMovement = Math.abs(changeX) > Math.abs(changeY);
+//     startX = null;
+//     startY = null;
+//
+//     if (changeX > 0 && horizontalMovement) {
+//         moveTilesRight(board)
+//         moveTilesRightAnimation(board, previousBoard)
+//     } else if (changeX < 0 && horizontalMovement) {
+//         moveTilesLeft(board)
+//         moveTilesLeftAnimation(board, previousBoard)
+//     } else if (changeY < 0 && !horizontalMovement) {
+//         moveTilesUp(board)
+//         moveTilesUpAnimation(board, previousBoard)
+//     } else if (changeY > 0 && !horizontalMovement) {
+//         moveTilesDown(board)
+//         moveTilesDownAnimation(board, previousBoard)
+//     }
+//
+//     if (compareBoards(board, previousBoard)) {
+//         window.setTimeout(function() {updateGameBoardCells(board)}, 100);
+//     } else {
+//         let randomTileClass = addRandomTile(board);
+//         window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100);
+//     }
+//
+// });
 
 
 $(".restartButton").click(function () {
