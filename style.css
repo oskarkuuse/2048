@@ -88,3 +88,10 @@ table {
     font-size: 18px;
     user-select: none;
 }
+
+html, body {
+    overflow-x: hidden;
+    overflow-y: hidden;
+    width: 100%;
+    height: 100%;
+}
