@@ -434,6 +434,10 @@ document.addEventListener('touchstart', (e) => {
     startY = e.touches[0].pageY
 });
 
+document.addEventListener('touchmove', (e) => {
+    e.preventDefault()
+});
+
 document.addEventListener('touchend', (e) => {
 
     e.preventDefault()
