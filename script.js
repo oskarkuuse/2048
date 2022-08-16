@@ -438,7 +438,7 @@ document.addEventListener('touchmove', (e) => {
     }
 
     let previousBoard = copyBoard(board);
-    // let gameOverParent = $(".gameOverParent");
+    let gameOverParent = $(".gameOverParent");
 
     let touch = e.touches[0];
 
@@ -475,6 +475,16 @@ document.addEventListener('touchmove', (e) => {
     } else {
         let randomTileClass = addRandomTile(board);
         window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100);
+    }
+
+    if (winningBoard(board) && gameOverParent.css("opacity") === "0") {
+        gameOverParent.children("b").text("Well done!")
+        $("button").children().text("Play again")
+        gameOverParent.animate({opacity: 1}, 2000);
+    } else if (isGameOver(board) && gameOverParent.css("opacity") === "0") {
+        gameOverParent.children("b").text("Game over!")
+        $("button").children().text("Try again")
+        gameOverParent.animate({opacity: 1}, 2000);
     }
 });
 
