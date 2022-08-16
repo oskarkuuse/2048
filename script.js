@@ -16,7 +16,8 @@ function updateGameBoardCells(gameBoardInfo) {
                     table.rows[i].cells[j].querySelector("div").style.boxShadow = "0 0 30px 10px rgba(243, 215, 116, " + shadowOpacity[gameBoardInfo[i][j]] + ")";
                 }
             } else {
-                table.rows[i].cells[j].innerHTML = "";
+                // table.rows[i].cells[j].innerHTML = "";
+                table.rows[i].cells[j].innerHTML = "<div style='width: 120px; height: 120px'></div>";
             }
         }
     }
