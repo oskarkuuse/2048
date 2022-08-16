@@ -455,7 +455,7 @@ document.addEventListener('touchmove', (e) => {
     startX = null;
     startY = null;
     allowMovement = false;
-    setTimeout(function () {allowMovement = true}, 200);
+    setTimeout(function () {allowMovement = true}, 5000);
 
     if (changeX > 0 && horizontalMovement) {
         moveTilesRight(board)
