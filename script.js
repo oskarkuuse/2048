@@ -1,5 +1,3 @@
-const shadowOpacity = {128: 0.24, 256: 0.32, 512: 0.4, 1024: 0.48, 2048: 0.55};
-
 function updateGameBoardCells(gameBoardInfo) {
     let table = document.getElementById("gameBoardTable");
     for (let i = 0; i < 4; i++) {
@@ -376,10 +374,38 @@ function winningBoard(board) {
     return false;
 }
 
+function respondToBoardMovement(board, previousBoard) {
+    if (compareBoards(board, previousBoard)) {
+        window.setTimeout(function() {updateGameBoardCells(board)}, 100);
+    } else {
+        let randomTileClass = addRandomTile(board);
+        window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100);
+    }
+}
+
+function handleGameOverState(board, gameOverParent) {
+    if (winningBoard(board) && gameOverParent.css("opacity") === "0") {
+        gameOverParent.children("b").text("Well done!")
+        $("button").children().text("Play again")
+        gameOverParent.animate({opacity: 1}, 2000);
+    } else if (isGameOver(board) && gameOverParent.css("opacity") === "0") {
+        gameOverParent.children("b").text("Game over!")
+        $("button").children().text("Try again")
+        gameOverParent.animate({opacity: 1}, 2000);
+    }
+}
+
 let board = [[0, 0, 0, 0],
              [0, 0, 0, 0],
              [0, 0, 0, 0],
              [0, 0, 0, 0]]
+
+const shadowOpacity = {128: 0.24, 256: 0.32, 512: 0.4, 1024: 0.48, 2048: 0.55};
+
+let startX = null;
+let startY = null;
+let allowMovement = true;
+let oneClick = true;
 
 initializeGame(board);
 
@@ -405,33 +431,17 @@ document.addEventListener("keydown", (event) => {
         gameOverParent.animate({opacity: 0}, 0)
     }
 
-    if (event.code === "ArrowRight" || event.code === "ArrowUp" || event.code === "ArrowDown" || event.code === "ArrowLeft") {
-        if (compareBoards(board, previousBoard)) {
-            window.setTimeout(function() {updateGameBoardCells(board)}, 100);
-        } else {
-            let randomTileClass = addRandomTile(board);
-            window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100);
-        }
-    }
+    if (event.code === "ArrowRight" || event.code === "ArrowUp" || event.code === "ArrowDown" || event.code === "ArrowLeft")
+        respondToBoardMovement(board, previousBoard);
 
-    if (winningBoard(board) && gameOverParent.css("opacity") === "0") {
-        gameOverParent.children("b").text("Well done!")
-        $("button").children().text("Play again")
-        gameOverParent.animate({opacity: 1}, 2000);
-    } else if (isGameOver(board) && gameOverParent.css("opacity") === "0") {
-        gameOverParent.children("b").text("Game over!")
-        $("button").children().text("Try again")
-        gameOverParent.animate({opacity: 1}, 2000);
-    }
+    handleGameOverState(board, gameOverParent);
+
 })
 
-let startX = null;
-let startY = null;
-let allowMovement = true;
-let oneClick = true;
-
-document.addEventListener('touchend', (e) => {
+document.addEventListener('touchend', () => {
     oneClick = true;
+    startX = null;
+    startY = null;
 });
 
 document.addEventListener('touchmove', (e) => {
@@ -476,21 +486,17 @@ document.addEventListener('touchmove', (e) => {
         moveTilesDownAnimation(board, previousBoard)
     }
 
-    if (compareBoards(board, previousBoard)) {
-        window.setTimeout(function() {updateGameBoardCells(board)}, 100);
-    } else {
-        let randomTileClass = addRandomTile(board);
-        window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100);
-    }
+    respondToBoardMovement(board, previousBoard);
 
-    if (winningBoard(board) && gameOverParent.css("opacity") === "0") {
-        gameOverParent.children("b").text("Well done!")
-        $("button").children().text("Play again")
-        gameOverParent.animate({opacity: 1}, 2000);
-    } else if (isGameOver(board) && gameOverParent.css("opacity") === "0") {
-        gameOverParent.children("b").text("Game over!")
-        $("button").children().text("Try again")
-        gameOverParent.animate({opacity: 1}, 2000);
+    handleGameOverState(board, gameOverParent);
+
+});
+
+$(".restartButton").click(function () {
+    let gameOverParent = $(".gameOverParent");
+    if (gameOverParent.css("opacity") !== "0") {
+        initializeGame(board);
+        gameOverParent.animate({opacity: 0}, 0)
     }
 });
 
@@ -539,12 +545,3 @@ document.addEventListener('touchmove', (e) => {
 //     }
 //
 // });
-
-
-$(".restartButton").click(function () {
-    let gameOverParent = $(".gameOverParent");
-    if (gameOverParent.css("opacity") !== "0") {
-        initializeGame(board);
-        gameOverParent.animate({opacity: 0}, 0)
-    }
-});
