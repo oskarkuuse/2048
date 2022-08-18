@@ -428,12 +428,17 @@ document.addEventListener("keydown", (event) => {
 let startX = null;
 let startY = null;
 let allowMovement = true;
+let oneClick = true;
+
+document.addEventListener('touchend', (e) => {
+    oneClick = true;
+});
 
 document.addEventListener('touchmove', (e) => {
 
     e.preventDefault()
 
-    if (!allowMovement) {
+    if (!allowMovement || !oneClick) {
         return;
     }
 
@@ -454,6 +459,7 @@ document.addEventListener('touchmove', (e) => {
     startX = null;
     startY = null;
     allowMovement = false;
+    oneClick = false;
     setTimeout(function () {allowMovement = true}, 100);
 
     if (changeX > 0 && horizontalMovement) {
