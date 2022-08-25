@@ -100,19 +100,27 @@ function initializeGame(board) {
 }
 
 function moveTilesRight(gameBoardInfo) {
+
+    //Arrays to store combined tiles
+    let combinedTiles = [];
+    let correctedCombinedTiles = [];
+
     for (let i = 0; i < 4; i++) {
         for (let j = 3; j > 0; j--) {
             if (gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j - 1]) {
                 gameBoardInfo[i][j - 1] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
+                combinedTiles.push(i * 4 + j - 1)
                 j--;
             } else if (j - 2 >= 0 && gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j - 1] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j - 2]) {
                 gameBoardInfo[i][j - 2] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
+                combinedTiles.push(i * 4 + j - 2)
                 j -= 2;
             } else if (j - 3 >= 0 && gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j - 2] === 0 && gameBoardInfo[i][j - 1] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j - 3]) {
                 gameBoardInfo[i][j - 3] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
+                combinedTiles.push(i * 4 + j - 3)
                 j -= 3;
             }
         }
@@ -122,14 +130,21 @@ function moveTilesRight(gameBoardInfo) {
         for (let j = 3; j >= 0; j--) {
             if (gameBoardInfo[i][j] !== 0) {
                 newRow[k] = gameBoardInfo[i][j];
+
+                // shift the combined tiles
+                let observedTile = i * 4 + j;
+                for (let l = 0; l < combinedTiles.length; l++) {
+                    if (combinedTiles[l] === observedTile) {
+                        correctedCombinedTiles.push(observedTile - j + k)
+                    }
+                }
+
                 k--;
             }
         }
         gameBoardInfo[i] = newRow;
     }
-    // let leftPos = ($(".cell3").offset().left - $(".cell0").offset().left) + "px";
-    // $(".cell0").children().css({position: "relative"}).animate({left: leftPos}, 100);
-    // updateGameBoardCells(gameBoardInfo);
+    return correctedCombinedTiles;
 }
 
 function moveTilesLeft(gameBoardInfo) {
@@ -374,12 +389,24 @@ function winningBoard(board) {
     return false;
 }
 
-function respondToBoardMovement(board, previousBoard) {
+function respondToBoardMovement(board, previousBoard, combinedTiles) {
     if (compareBoards(board, previousBoard)) {
         window.setTimeout(function() {updateGameBoardCells(board)}, 100);
     } else {
         let randomTileClass = addRandomTile(board);
-        window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100);
+
+        window.setTimeout(function() {
+            updateGameBoardCells(board);
+            $(randomTileClass).children().addClass("newTileAnimation")
+
+            // Execute animation on tiles combined, which are marked in the array
+            for (let i = 0; i < combinedTiles.length; i++) {
+                let tileClass = ".cell" + combinedTiles[i];
+                console.log(tileClass)
+                $(tileClass).children().addClass("combineTilesAnimation");
+            }
+
+        }, 100);
     }
 }
 
@@ -414,8 +441,9 @@ document.addEventListener("keydown", (event) => {
     let previousBoard = copyBoard(board);
     let gameOverParent = $(".gameOverParent");
 
+    let combinedTiles = [];
     if (event.code === "ArrowRight" && !winningBoard(board)) {
-        moveTilesRight(board)
+        combinedTiles = moveTilesRight(board)
         moveTilesRightAnimation(board, previousBoard)
     } else if (event.code === "ArrowLeft" && !winningBoard(board)) {
         moveTilesLeft(board)
@@ -432,7 +460,7 @@ document.addEventListener("keydown", (event) => {
     }
 
     if (event.code === "ArrowRight" || event.code === "ArrowUp" || event.code === "ArrowDown" || event.code === "ArrowLeft")
-        respondToBoardMovement(board, previousBoard);
+        respondToBoardMovement(board, previousBoard, combinedTiles);
 
     handleGameOverState(board, gameOverParent);
 
@@ -448,7 +476,7 @@ document.addEventListener('touchmove', (e) => {
 
     e.preventDefault()
 
-    if (!allowMovement || !oneClick) {
+    if (!allowMovement || !oneClick || winningBoard(board)) {
         return;
     }
 
@@ -499,49 +527,3 @@ $(".restartButton").click(function () {
         gameOverParent.animate({opacity: 0}, 0)
     }
 });
-
-// mouse movements
-// document.addEventListener('mousedown', (e) => {
-//     startX = e.pageX
-//     startY = e.pageY
-// });
-
-// document.addEventListener('mouseup', (e) => {
-//
-//     let previousBoard = copyBoard(board);
-//     let gameOverParent = $(".gameOverParent");
-//
-//     if (startX == null || startY == null) {
-//         return;
-//     }
-//     let endX = e.pageX;
-//     let endY = e.pageY;
-//
-//     let changeX = endX - startX;
-//     let changeY = endY - startY;
-//     let horizontalMovement = Math.abs(changeX) > Math.abs(changeY);
-//     startX = null;
-//     startY = null;
-//
-//     if (changeX > 0 && horizontalMovement) {
-//         moveTilesRight(board)
-//         moveTilesRightAnimation(board, previousBoard)
-//     } else if (changeX < 0 && horizontalMovement) {
-//         moveTilesLeft(board)
-//         moveTilesLeftAnimation(board, previousBoard)
-//     } else if (changeY < 0 && !horizontalMovement) {
-//         moveTilesUp(board)
-//         moveTilesUpAnimation(board, previousBoard)
-//     } else if (changeY > 0 && !horizontalMovement) {
-//         moveTilesDown(board)
-//         moveTilesDownAnimation(board, previousBoard)
-//     }
-//
-//     if (compareBoards(board, previousBoard)) {
-//         window.setTimeout(function() {updateGameBoardCells(board)}, 100);
-//     } else {
-//         let randomTileClass = addRandomTile(board);
-//         window.setTimeout(function() {updateGameBoardCells(board); $(randomTileClass).children().addClass("newTileAnimation")}, 100);
-//     }
-//
-// });
