@@ -148,19 +148,26 @@ function moveTilesRight(gameBoardInfo) {
 }
 
 function moveTilesLeft(gameBoardInfo) {
+
+    let combinedTiles = [];
+    let correctedCombinedTiles = [];
+
     for (let i = 0; i < 4; i++) {
         for (let j = 0; j < 3; j++) {
             if (gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j + 1]) {
                 gameBoardInfo[i][j + 1] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
+                combinedTiles.push(i * 4 + j + 1)
                 j++;
             } else if (j + 2 <= 3 && gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j + 1] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j + 2]) {
                 gameBoardInfo[i][j + 2] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
+                combinedTiles.push(i * 4 + j + 2)
                 j += 2;
             } else if (j + 3 <= 3 && gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j + 1] === 0 && gameBoardInfo[i][j + 2] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j + 3]) {
                 gameBoardInfo[i][j + 3] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
+                combinedTiles.push(i * 4 + j + 3)
                 j += 3;
             }
         }
@@ -170,29 +177,44 @@ function moveTilesLeft(gameBoardInfo) {
         for (let j = 0; j <= 3; j++) {
             if (gameBoardInfo[i][j] !== 0) {
                 newRow[k] = gameBoardInfo[i][j];
+
+                let observedTile = i * 4 + j;
+                for (let l = 0; l < combinedTiles.length; l++) {
+                    if (combinedTiles[l] === observedTile) {
+                        correctedCombinedTiles.push(observedTile - j + k)
+                    }
+                }
+
                 k++;
             }
         }
         gameBoardInfo[i] = newRow;
     }
-
+    return correctedCombinedTiles;
 }
 
 function moveTilesUp(gameBoardInfo) {
+
+    let combinedTiles = [];
+    let correctedCombinedTiles = [];
+
     for (let j = 0; j < 4; j++) {
         for (let i = 0; i < 3; i++) {
             if (gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j] === gameBoardInfo[i + 1][j]) {
                 gameBoardInfo[i + 1][j] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
                 i++;
+                combinedTiles.push(i * 4 + j)
             } else if (i + 2 <= 3 && gameBoardInfo[i][j] !== 0 && gameBoardInfo[i + 1][j] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i + 2][j]) {
                 gameBoardInfo[i + 2][j] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
                 i += 2;
+                combinedTiles.push(i * 4 + j)
             } else if (i + 3 <= 3 && gameBoardInfo[i][j] !== 0 && gameBoardInfo[i + 1][j] === 0 && gameBoardInfo[i + 2][j] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i + 3][j]) {
                 gameBoardInfo[i + 3][j] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
                 i += 3;
+                combinedTiles.push(i * 4 + j)
             }
         }
 
@@ -201,6 +223,14 @@ function moveTilesUp(gameBoardInfo) {
         for (let i = 0; i <= 3; i++) {
             if (gameBoardInfo[i][j] !== 0) {
                 newColumn[k] = gameBoardInfo[i][j];
+
+                let observedTile = i * 4 + j;
+                for (let l = 0; l < combinedTiles.length; l++) {
+                    if (combinedTiles[l] === observedTile) {
+                        correctedCombinedTiles.push(observedTile % 4 + k * 4)
+                    }
+                }
+
                 k++;
             }
         }
@@ -210,23 +240,31 @@ function moveTilesUp(gameBoardInfo) {
         }
 
     }
+    return correctedCombinedTiles
 }
 
 function moveTilesDown(gameBoardInfo) {
+
+    let combinedTiles = [];
+    let correctedCombinedTiles = [];
+
     for (let j = 0; j < 4; j++) {
         for (let i = 3; i > 0; i--) {
             if (gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j] === gameBoardInfo[i - 1][j]) {
                 gameBoardInfo[i - 1][j] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
                 i--;
+                combinedTiles.push(i * 4 + j)
             } else if (i - 2 >= 0 && gameBoardInfo[i][j] !== 0 && gameBoardInfo[i - 1][j] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i - 2][j]) {
                 gameBoardInfo[i - 2][j] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
                 i -= 2;
+                combinedTiles.push(i * 4 + j)
             } else if (i - 3 >= 0 && gameBoardInfo[i][j] !== 0 && gameBoardInfo[i - 1][j] === 0 && gameBoardInfo[i - 2][j] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i - 3][j]) {
                 gameBoardInfo[i - 3][j] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
                 i -= 3;
+                combinedTiles.push(i * 4 + j)
             }
         }
 
@@ -235,6 +273,14 @@ function moveTilesDown(gameBoardInfo) {
         for (let i = 3; i >= 0; i--) {
             if (gameBoardInfo[i][j] !== 0) {
                 newColumn[k] = gameBoardInfo[i][j];
+
+                let observedTile = i * 4 + j;
+                for (let l = 0; l < combinedTiles.length; l++) {
+                    if (combinedTiles[l] === observedTile) {
+                        correctedCombinedTiles.push(observedTile % 4 + k * 4)
+                    }
+                }
+
                 k--;
             }
         }
@@ -244,6 +290,7 @@ function moveTilesDown(gameBoardInfo) {
         }
 
     }
+    return correctedCombinedTiles;
 }
 
 function copyBoard(gameBoardInfo) {
@@ -446,13 +493,13 @@ document.addEventListener("keydown", (event) => {
         combinedTiles = moveTilesRight(board)
         moveTilesRightAnimation(board, previousBoard)
     } else if (event.code === "ArrowLeft" && !winningBoard(board)) {
-        moveTilesLeft(board)
+        combinedTiles = moveTilesLeft(board)
         moveTilesLeftAnimation(board, previousBoard)
     } else if (event.code === "ArrowUp" && !winningBoard(board)) {
-        moveTilesUp(board)
+        combinedTiles = moveTilesUp(board)
         moveTilesUpAnimation(board, previousBoard)
     } else if (event.code === "ArrowDown" && !winningBoard(board)) {
-        moveTilesDown(board)
+        combinedTiles = moveTilesDown(board)
         moveTilesDownAnimation(board, previousBoard)
     } else if (event.code === "KeyR") {
         initializeGame(board)
