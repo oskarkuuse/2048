@@ -45,7 +45,7 @@ table {
     align-items: center;
     justify-content: center;
 
-    font-family: sans-serif;
+    font-family: Rubik, sans-serif;
     font-size: 50px;
     color: #776e65;
 }
@@ -91,9 +91,13 @@ table {
     justify-content: center;
     flex-direction: column;
 
-    font-family: sans-serif;
+    font-family: Rubik, sans-serif;
     font-size: 60px;
     color: #776e65;
+}
+
+.gameOverParent b {
+    font-family: Rubik, sans-serif;
 }
 
 .restartButton {
