@@ -110,18 +110,18 @@ function moveTilesRight(gameBoardInfo) {
             if (gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j - 1]) {
                 gameBoardInfo[i][j - 1] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
-                combinedTiles.push(i * 4 + j - 1)
                 j--;
+                combinedTiles.push(i * 4 + j)
             } else if (j - 2 >= 0 && gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j - 1] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j - 2]) {
                 gameBoardInfo[i][j - 2] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
-                combinedTiles.push(i * 4 + j - 2)
                 j -= 2;
+                combinedTiles.push(i * 4 + j)
             } else if (j - 3 >= 0 && gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j - 2] === 0 && gameBoardInfo[i][j - 1] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j - 3]) {
                 gameBoardInfo[i][j - 3] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
-                combinedTiles.push(i * 4 + j - 3)
                 j -= 3;
+                combinedTiles.push(i * 4 + j)
             }
         }
 
@@ -130,15 +130,7 @@ function moveTilesRight(gameBoardInfo) {
         for (let j = 3; j >= 0; j--) {
             if (gameBoardInfo[i][j] !== 0) {
                 newRow[k] = gameBoardInfo[i][j];
-
-                // shift the combined tiles
-                let observedTile = i * 4 + j;
-                for (let l = 0; l < combinedTiles.length; l++) {
-                    if (combinedTiles[l] === observedTile) {
-                        correctedCombinedTiles.push(observedTile - j + k)
-                    }
-                }
-
+                correctCombineTilesRightLeft(i, j, k, combinedTiles, correctedCombinedTiles);
                 k--;
             }
         }
@@ -157,18 +149,18 @@ function moveTilesLeft(gameBoardInfo) {
             if (gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j + 1]) {
                 gameBoardInfo[i][j + 1] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
-                combinedTiles.push(i * 4 + j + 1)
                 j++;
+                combinedTiles.push(i * 4 + j)
             } else if (j + 2 <= 3 && gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j + 1] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j + 2]) {
                 gameBoardInfo[i][j + 2] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
-                combinedTiles.push(i * 4 + j + 2)
                 j += 2;
+                combinedTiles.push(i * 4 + j)
             } else if (j + 3 <= 3 && gameBoardInfo[i][j] !== 0 && gameBoardInfo[i][j + 1] === 0 && gameBoardInfo[i][j + 2] === 0 && gameBoardInfo[i][j] === gameBoardInfo[i][j + 3]) {
                 gameBoardInfo[i][j + 3] = gameBoardInfo[i][j] * 2;
                 gameBoardInfo[i][j] = 0;
-                combinedTiles.push(i * 4 + j + 3)
                 j += 3;
+                combinedTiles.push(i * 4 + j)
             }
         }
 
@@ -177,14 +169,7 @@ function moveTilesLeft(gameBoardInfo) {
         for (let j = 0; j <= 3; j++) {
             if (gameBoardInfo[i][j] !== 0) {
                 newRow[k] = gameBoardInfo[i][j];
-
-                let observedTile = i * 4 + j;
-                for (let l = 0; l < combinedTiles.length; l++) {
-                    if (combinedTiles[l] === observedTile) {
-                        correctedCombinedTiles.push(observedTile - j + k)
-                    }
-                }
-
+                correctCombineTilesRightLeft(i, j, k, combinedTiles, correctedCombinedTiles);
                 k++;
             }
         }
@@ -223,14 +208,7 @@ function moveTilesUp(gameBoardInfo) {
         for (let i = 0; i <= 3; i++) {
             if (gameBoardInfo[i][j] !== 0) {
                 newColumn[k] = gameBoardInfo[i][j];
-
-                let observedTile = i * 4 + j;
-                for (let l = 0; l < combinedTiles.length; l++) {
-                    if (combinedTiles[l] === observedTile) {
-                        correctedCombinedTiles.push(observedTile % 4 + k * 4)
-                    }
-                }
-
+                correctCombinedTilesUpDown(i, j, k, combinedTiles, correctedCombinedTiles);
                 k++;
             }
         }
@@ -273,14 +251,7 @@ function moveTilesDown(gameBoardInfo) {
         for (let i = 3; i >= 0; i--) {
             if (gameBoardInfo[i][j] !== 0) {
                 newColumn[k] = gameBoardInfo[i][j];
-
-                let observedTile = i * 4 + j;
-                for (let l = 0; l < combinedTiles.length; l++) {
-                    if (combinedTiles[l] === observedTile) {
-                        correctedCombinedTiles.push(observedTile % 4 + k * 4)
-                    }
-                }
-
+                correctCombinedTilesUpDown(i, j, k, combinedTiles, correctedCombinedTiles);
                 k--;
             }
         }
@@ -291,6 +262,24 @@ function moveTilesDown(gameBoardInfo) {
 
     }
     return correctedCombinedTiles;
+}
+
+function correctCombinedTilesUpDown(i, j, k, combinedTiles, correctedTiles) {
+    let observedTile = i * 4 + j;
+    for (let l = 0; l < combinedTiles.length; l++) {
+        if (combinedTiles[l] === observedTile) {
+            correctedTiles.push(observedTile % 4 + k * 4)
+        }
+    }
+}
+
+function correctCombineTilesRightLeft(i, j, k, combinedTiles, correctedTiles) {
+    let observedTile = i * 4 + j;
+    for (let l = 0; l < combinedTiles.length; l++) {
+        if (combinedTiles[l] === observedTile) {
+            correctedTiles.push(observedTile - j + k)
+        }
+    }
 }
 
 function copyBoard(gameBoardInfo) {
@@ -449,7 +438,6 @@ function respondToBoardMovement(board, previousBoard, combinedTiles) {
             // Execute animation on tiles combined, which are marked in the array
             for (let i = 0; i < combinedTiles.length; i++) {
                 let tileClass = ".cell" + combinedTiles[i];
-                console.log(tileClass)
                 $(tileClass).children().addClass("combineTilesAnimation");
             }
 
@@ -547,21 +535,22 @@ document.addEventListener('touchmove', (e) => {
     oneClick = false;
     setTimeout(function () {allowMovement = true}, 100);
 
+    let combinedTiles = [];
     if (changeX > 0 && horizontalMovement) {
-        moveTilesRight(board)
+        combinedTiles = moveTilesRight(board)
         moveTilesRightAnimation(board, previousBoard)
     } else if (changeX < 0 && horizontalMovement) {
-        moveTilesLeft(board)
+        combinedTiles = moveTilesLeft(board)
         moveTilesLeftAnimation(board, previousBoard)
     } else if (changeY < 0 && !horizontalMovement) {
-        moveTilesUp(board)
+        combinedTiles = moveTilesUp(board)
         moveTilesUpAnimation(board, previousBoard)
     } else if (changeY > 0 && !horizontalMovement) {
-        moveTilesDown(board)
+        combinedTiles = moveTilesDown(board)
         moveTilesDownAnimation(board, previousBoard)
     }
 
-    respondToBoardMovement(board, previousBoard);
+    respondToBoardMovement(board, previousBoard, combinedTiles);
 
     handleGameOverState(board, gameOverParent);
 
